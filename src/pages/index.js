@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Head from 'next/head'
+import Script from 'next/script';
 import yellowPng from '../../public/yellow.png';
 import whitePng from '../../public/white.png';
 import styles from '@/styles/Home.module.css'
@@ -141,7 +142,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <header className={styles.header}><h1 className={styles.title}>{'- "an eggsample of how i lose my time on earth"'}</h1></header>
+        <header className={styles.header}>
+          <h1 className={styles.title}>{'- "an eggsample of how i lose my time on earth"'}</h1>
+          <a href="https://www.buymeacoffee.com/spkyraccoon" target="_blank" className={styles.buyme}>buy me a coffee</a>
+        </header>
         <div className={styles.canvasWrapper}>
           <canvas ref={canvasRef} className={`${styles.canvas} ${!isCanvasReady && styles.hiddenCanvas}`}>
             Désolé, votre navigateur ne prend pas en charge &lt;canvas&gt;.

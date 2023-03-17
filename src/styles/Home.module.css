@@ -1,13 +1,22 @@
 .header {
   position: absolute;
-  left: 24px;
-  top: 24px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
 }
 
-.title {
+.title, .buyme {
   color: black;
   font-family: monospace;
   font-size: 12px;
+  font-weight: bold;
+}
+
+.buyme {
+  text-decoration: underline;
 }
 
 .main {
@@ -80,6 +89,8 @@
 }
 
 .hoveredButton,
-.button:hover {
+.button:hover,
+.button:focus {
+  outline: none;
   border-style: dotted;
 }
