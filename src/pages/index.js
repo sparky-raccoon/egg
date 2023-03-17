@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import Head from 'next/head'
-import Script from 'next/script';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import Modal from 'react-modal';
+import Head from 'next/head';
 import yellowPng from '../../public/yellow.png';
 import whitePng from '../../public/white.png';
-import styles from '@/styles/Home.module.css'
+import styles from '@/styles/Home.module.css';
+
+Modal.setAppElement("#__next");
 
 export default function Home() {
   const [ finalEgg, setFinalEgg ] = useState('');
@@ -13,6 +15,7 @@ export default function Home() {
   const [ isCanvasReady, setIsCanvasReady ] = useState(false);
   const [ pressedKey, setPressedKey ] = useState('');
   const [ isCanvasFilled, setIsCanvasFilled ] = useState(false);
+  const [ isModalOpened, setIsModalOpened ] = useState(false);
 
   const canvasRef = useRef(null);
 
@@ -41,6 +44,7 @@ export default function Home() {
         newDrawingPosY = newDrawingPosY + 100;
       } else {
         setIsCanvasFilled(true);
+        setIsModalOpened(true);
         return;
       }
     }
@@ -62,22 +66,23 @@ export default function Home() {
   }, [ whiteObject, yellowObject, drawingPos ])
 
   const addE = useCallback(() => {
-    if (isCanvasFilled) return;
+    if (isCanvasFilled) !isModalOpened && setIsModalOpened(true);
     const successfullyUpdated = updateCanvas('e');
     successfullyUpdated && setFinalEgg(finalEgg + 'e');
-  }, [ isCanvasFilled, finalEgg, updateCanvas ])
+  }, [ isCanvasFilled, isModalOpened, finalEgg, updateCanvas ])
 
   const addGG = useCallback(() => {
-    if (isCanvasFilled) return;
+    if (isCanvasFilled) !isModalOpened && setIsModalOpened(true);
     const successfullyUpdated = updateCanvas('gg');
     successfullyUpdated && setFinalEgg(finalEgg + 'gg');
-  }, [ isCanvasFilled, finalEgg, updateCanvas ])
+  }, [ isCanvasFilled, isModalOpened, finalEgg, updateCanvas ])
 
   const reset = useCallback(() => {
     updateCanvas();
     setFinalEgg('');
     setDrawingPos({ x: -10, y: 0 });
     setIsCanvasFilled(false);
+    setIsModalOpened(false);
   }, [ updateCanvas ])
 
   const onKeyDown = useCallback(({ key }) => {
@@ -158,6 +163,30 @@ export default function Home() {
           <button className={`${styles.button} ${pressedKey === 'R' && styles.hoveredButton}`} onClick={reset}>{"R - resets"}</button>
         </div>
       </main>
+      <Modal
+        isOpen={isModalOpened}
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.25)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          content: {
+            position: 'initial',
+            width: 400,
+            display: 'flex',
+            flexDirection: 'column',
+            color: 'black',
+            fontFamily: 'monospace',
+            border: '2px solid black'
+          }
+        }}
+        onRequestClose={() => setIsModalOpened(false)}
+      >
+        <h2 className={styles.modalTitle}>Eggselent, the canvas is filled.</h2>
+        {"Type 'R' to reset the canvas or 'esc' to close this dialog."}
+      </Modal>
     </>
   )
 }
