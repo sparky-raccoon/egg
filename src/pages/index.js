@@ -7,6 +7,17 @@ import styles from '@/styles/Home.module.css';
 
 Modal.setAppElement("#__next");
 
+const MODAL_TEXTS = {
+  FILLED: {
+    title: "Eggselent, the canvas is filled.",
+    content: "Type 'R' to reset the canvas or 'esc' to close this dialog.",
+  },
+  NO_SPACE_FOR_E: {
+    title: "Only yellows, please.",
+    content: "Type 'R' to reset the canvas, add more yellows with 'G', or 'esc' to close this dialog."
+  }
+}
+
 export default function Home() {
   const [ finalEgg, setFinalEgg ] = useState('');
   const [ drawingPos, setDrawingPos ] = useState({ x: -10, y: 0 });
@@ -16,6 +27,7 @@ export default function Home() {
   const [ pressedKey, setPressedKey ] = useState('');
   const [ isCanvasFilled, setIsCanvasFilled ] = useState(false);
   const [ isModalOpened, setIsModalOpened ] = useState(false);
+  const [ modalText, setModalText ] = useState(null);
 
   const canvasRef = useRef(null);
 
@@ -43,13 +55,25 @@ export default function Home() {
         newDrawingPosX = 0;
         newDrawingPosY = newDrawingPosY + 100;
       } else {
-        setIsCanvasFilled(true);
-        setIsModalOpened(true);
+        if (kind === 'e' && drawingPosX + yellowObject.width + dx <= canvasWidth) {
+          setModalText(MODAL_TEXTS.NO_SPACE_FOR_E);
+          setIsModalOpened(true);
+        } else {
+          setIsCanvasFilled(true);
+          setModalText(MODAL_TEXTS.FILLED);
+          setIsModalOpened(true);
+        }
         return;
       }
     }
 
-    if (newReachedPosY > canvasHeight) return;
+    if (newReachedPosY > canvasHeight) {
+      if (kind === 'e' && drawingPosY + yellowObject.height + dy <= canvasHeight) {
+        setModalText(MODAL_TEXTS.NO_SPACE_FOR_E);
+        setIsModalOpened(true);
+      }
+      return;
+    }
 
     context.save();
     context.translate(newDrawingPosX, newDrawingPosY);
@@ -66,16 +90,22 @@ export default function Home() {
   }, [ whiteObject, yellowObject, drawingPos ])
 
   const addE = useCallback(() => {
-    if (isCanvasFilled) !isModalOpened && setIsModalOpened(true);
+    if (isModalOpened) return;
+    if (isCanvasFilled) setIsModalOpened(true);
     const successfullyUpdated = updateCanvas('e');
     successfullyUpdated && setFinalEgg(finalEgg + 'e');
   }, [ isCanvasFilled, isModalOpened, finalEgg, updateCanvas ])
 
   const addGG = useCallback(() => {
-    if (isCanvasFilled) !isModalOpened && setIsModalOpened(true);
+    if (isModalOpened) {
+      if (modalText?.title === MODAL_TEXTS.NO_SPACE_FOR_E.title) setIsModalOpened(false);
+      else return;
+    }
+
+    if (isCanvasFilled) setIsModalOpened(true);
     const successfullyUpdated = updateCanvas('gg');
     successfullyUpdated && setFinalEgg(finalEgg + 'gg');
-  }, [ isCanvasFilled, isModalOpened, finalEgg, updateCanvas ])
+  }, [ isCanvasFilled, isModalOpened, modalText, finalEgg, updateCanvas ])
 
   const reset = useCallback(() => {
     updateCanvas();
@@ -83,6 +113,7 @@ export default function Home() {
     setDrawingPos({ x: -10, y: 0 });
     setIsCanvasFilled(false);
     setIsModalOpened(false);
+    setModalText(null);
   }, [ updateCanvas ])
 
   const onKeyDown = useCallback(({ key }) => {
@@ -184,8 +215,8 @@ export default function Home() {
         }}
         onRequestClose={() => setIsModalOpened(false)}
       >
-        <h2 className={styles.modalTitle}>Eggselent, the canvas is filled.</h2>
-        {"Type 'R' to reset the canvas or 'esc' to close this dialog."}
+        <h2 className={styles.modalTitle}>{modalText?.title}</h2>
+        {modalText?.content}
       </Modal>
     </>
   )
