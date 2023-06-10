@@ -10,16 +10,19 @@
 
 .title, .buyme {
   color: black;
-  font-family: monospace;
   font-weight: bold;
+  font-family: monospace;
 }
 
 .title {
   font-size: 14px;
+  margin-right: 16px;
 }
 
 .buyme {
+  font-size: 12px;
   text-decoration: underline;
+  text-align: right;
 }
 
 .main {
@@ -31,27 +34,27 @@
   background-color: white;
 }
 
-.canvasWrapper {
-  position: relative;
-}
-
 .canvas {
   background-color: white;
   border: 2px solid black;
   border-radius: 12px;
   position: relative;
   padding: 16px;
+  width: calc(100vw - 32px);
+  height: calc(100vw - 32px);
+  max-width: 420px;
+  max-height: 420px;
 }
 
 .result {
   font-family: monospace;
   font-weight: bold;
   color: black;
-  position: absolute;
-  top: 440px;
-  width: 436px;
+  width: calc(100vw - 32px);
+  max-width: 420px;
   overflow-wrap: break-word;
-  text-align: center;
+  text-align: left;
+  margin-bottom: 16px;
 }
 
 .hiddenCanvas {
@@ -76,7 +79,8 @@
   border-radius: 50px;
   font-weight: bold;
   box-sizing: border-box;
-  margin-right: 8px;
+  width: fit-content;
+  margin: 0 8px 0 0;
 }
 
 .button:first-child {
@@ -89,6 +93,7 @@
 
 .button:last-child {
   background-color: #f89923;
+  margin: 0;
 }
 
 .hoveredButton,
@@ -101,4 +106,14 @@
 .modalTitle {
   font-size: 14px;
   margin-bottom: 8px;
+}
+
+@media screen and (max-width: 576px) {
+  .buttons {
+    flex-direction: column;
+  }
+
+  .button {
+    margin: 0 0 8px 0;
+  }
 }
