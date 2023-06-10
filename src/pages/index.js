@@ -132,6 +132,16 @@ export default function Home() {
     setModalText(null);
   }, [updateCanvas]);
 
+  const downloadEgg = () => {
+    if (finalEgg.length === 0) return;
+
+    const canvas = canvasRef.current;
+    const link = document.createElement("a");
+    link.download = "egg.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  };
+
   const onKeyDown = useCallback(
     ({ key }) => {
       const letter = key.toUpperCase();
@@ -147,6 +157,10 @@ export default function Home() {
         case "R":
           reset();
           setPressedKey("R");
+          break;
+        case "D":
+          downloadEgg();
+          setPressedKey("D");
           break;
       }
     },
@@ -262,6 +276,16 @@ export default function Home() {
           >
             {"R - resets"}
           </button>
+          {finalEgg && (
+            <button
+              className={`${styles.button} ${
+                pressedKey === "D" && styles.hoveredButton
+              }`}
+              onClick={downloadEgg}
+            >
+              {"D - download"}
+            </button>
+          )}
         </div>
       </main>
       <Modal
